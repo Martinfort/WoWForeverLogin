@@ -390,8 +390,10 @@ function initForever(){switchExpansion();audio.src='https://xiexe.github.io/WoWL
 function resetForever(){clearInterval(foreverTimer);clearTimeout(foreverTimeout);document.getElementById('queue').style.display='none';document.getElementById('disconnectBox').style.display='none';document.getElementById('rulesetScreen').style.display='none';document.getElementById('foreverLogin').style.display='flex';document.querySelector('#foreverLogin input[type=password]').value=''}
 function startForever(){
  audio.play().catch(()=>{});
+ const testRuleset=document.querySelector('#foreverLogin input').value.trim().toLowerCase()==='mruleset';
  resetForever();
  document.getElementById('foreverLogin').style.display='none';
+ if(testRuleset){document.getElementById('rulesetScreen').style.display='flex';return;}
  document.getElementById('queue').style.display='flex';
  const longQueue=Math.random()<0.5;
  const started=Date.now();
