@@ -25,13 +25,13 @@
 .rulesetCard p{font:16px/1.05 FRIZQT,Georgia;margin:0}
 @media(max-width:800px){#rulesetSubtitle{margin-bottom:25px;font-size:14px}#rulesetCards{gap:6px}.rulesetCard{width:23vw;height:55vh;padding:10px 5px;border-width:3px}.rulesetCard h3{font-size:15px}.rulesetIcon{width:40px;height:40px;font-size:23px;margin-bottom:15px}.rulesetCard p{font-size:11px}}
 </style></head>
-    <body onload="initForever();">
+    <body onload="initForever();startForever();">
         <div class="noSelect">
 
             <!-- LOGO -->
             <button class="xPacButton" id="logo" ></button>
             
-            <div id="foreverTag">FOREVER</div><div id="foreverLogin"><button class="button" id="foreverLoginButton" onclick="startForever();">Enter World</button><p style="color:#ffc700;text-shadow:0 2px 4px #000;font:14px Georgia,serif;margin:8px 0">No login required — this is a parody simulator.</p><button class="button" onclick="showRulesetTest();">Preview Rulesets</button></div><div id="simulationNotice">Fan parody — no credentials requested or collected</div>
+            <div id="foreverTag">FOREVER</div><div id="foreverLogin" style="display:none"></div><div id="simulationNotice">Fan parody — no credentials requested or collected</div>
 <!--QUIT BUTTON AND OPTIONS BUTTON-->
             <div id="quitButtonContainer" class="foreground">
                 <button id="optButton" class="button" onclick="showSettings();" > Options </button>
@@ -385,7 +385,6 @@ function setButtonColors(index)
 }</script><script>
 let foreverTimer,foreverTimeout;
 function initForever(){switchExpansion();audio.src='https://xiexe.github.io/WoWLoginScreens/assets/audio/Vanilla.ogg';audio.loop=true;audio.volume=.45;window.addEventListener('pointerdown',()=>{audio.play().catch(()=>{})},{once:true});document.getElementById('queue').style.display='none';document.getElementById('disconnectBox').style.display='none';document.getElementById('rulesetScreen').style.display='none';document.getElementById('foreverLogin').style.display='flex';document.getElementById('logo').style.background="url('https://bnetcmsus-a.akamaihd.net/cms/gallery/j3/J3RLTCKOODJ51789169243964.png') center / contain no-repeat"}
-function showRulesetTest(){resetForever();document.getElementById('foreverLogin').style.display='none';document.getElementById('rulesetScreen').style.display='flex'}
 function resetForever(){clearInterval(foreverTimer);clearTimeout(foreverTimeout);document.getElementById('queue').style.display='none';document.getElementById('disconnectBox').style.display='none';document.getElementById('rulesetScreen').style.display='none';document.getElementById('foreverLogin').style.display='flex';}
 function startForever(){
  audio.play().catch(()=>{});
