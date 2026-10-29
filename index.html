@@ -2,8 +2,8 @@
 <link rel="stylesheet" href="https://xiexe.github.io/WoWLoginScreens/assets/css/styles.css">
 <style>
 /* Xiexe's original WoW interface assets and Vanilla animated scene */
-#background{width:100%;height:100%;object-fit:cover;min-width:100%;min-height:100%}
-#logo{background-image:url('https://xiexe.github.io/WoWLoginScreens/assets/img/ui/logos/Vanilla.png')!important}
+#background{width:100vw;height:100vh;object-fit:cover;min-width:100%;min-height:100%;z-index:-1}body{background:#080507}
+#logo{background:url('https://xiexe.github.io/WoWLoginScreens/assets/img/ui/logos/Vanilla.png') no-repeat top!important;background-size:contain!important}
 #queue,#disconnectBox,#connectingBox{position:absolute;inset:0;z-index:3}
 #queue,#disconnectBox,#connectingBox{display:none}
 #loginBox{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;flex-direction:column}
@@ -20,13 +20,13 @@
 </style></head><body>
 <div class="noSelect">
 <div class="xPacButton" id="logo" aria-label="World of Warcraft Vanilla"></div>
-<div id="loginBox"><p class="queueText">WORLD OF WARCRAFT FOREVER</p><p class="queueText">Account Name</p><input aria-label="Account name" placeholder="Account Name" autocomplete="off"><p class="queueText">Account Password</p><input aria-label="Demo password" type="password" placeholder="Password" autocomplete="off"><button class="button" id="loginButton">Log In</button></div>
+<div id="loginBox"><p class="queueText" style="font-size:16px;letter-spacing:5px">FOREVER</p><p class="queueText">Account Name</p><input aria-label="Account name" placeholder="Account Name" autocomplete="off"><p class="queueText">Account Password</p><input aria-label="Demo password" type="password" placeholder="Password" autocomplete="off"><button class="button" id="loginButton">Log In</button></div>
 <div class="centered" id="connectingBox"><div class="UIBox" style="width:450px;height:100px"></div><div class="UIBoxBackground" style="width:500px;height:150px"></div><div id="queueTextContainer"><p class="queueText" id="connectingText">Authenticating...</p></div></div>
 <div class="centered" id="queue"><div class="UIBox" style="width:450px;height:100px"></div><div class="UIBoxBackground" style="width:500px;height:150px"></div><div id="queueTextContainer"><p class="queueText">Login Servers are Full</p><p class="queueText" id="queuePosition">Position in Queue: 23482</p><p class="queueText" id="queueTime">Estimated time: 2 min</p></div><button class="button" id="realmListButton">Cancel</button></div>
 <div class="centered" id="disconnectBox"><div class="UIBox" style="width:550px;height:100px"></div><div class="UIBoxBackground" style="width:600px;height:150px"></div><div id="dcTextContainer"><p class="queueText">You have been disconnected from the server.</p><p class="queueText">(WOW51900319)</p></div><button class="button" id="disconButton">Okay</button></div>
 <div class="fullWidth"><p id="copyrightText">WoW Forever fan-made parody · Based on Xiexe's WoWLoginScreens</p></div><p id="buildVersion">Version 1.12.1 (5875) (Release)</p><p id="buildDate">Vanilla</p>
 <div id="parody">Simulation only — credentials are not transmitted or stored</div>
-<div class="fullScreen"><div class="centered"><video autoplay muted loop playsinline id="background"><source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.webm" type="video/webm"><source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.mp4" type="video/mp4"></video></div></div>
+<div class="fullScreen" style="position:fixed;inset:0;z-index:-1;pointer-events:none"><div class="centered"><video autoplay muted loop playsinline id="background" style="position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:-1"><source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.webm" type="video/webm"><source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.mp4" type="video/mp4"></video></div></div>
 </div>
 <script>
 let interval,timeout;const el=id=>document.getElementById(id);function display(which){['loginBox','connectingBox','queue','disconnectBox'].forEach(id=>el(id).style.display=id===which?'flex':'none')}
