@@ -1,37 +1,372 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>World of Warcraft Forever — Queue Simulator</title>
-<link rel="stylesheet" href="https://xiexe.github.io/WoWLoginScreens/assets/css/styles.css">
-<style>
-/* Xiexe's original WoW interface assets and Vanilla animated scene */
-#background{width:100vw;height:100vh;object-fit:cover;min-width:100%;min-height:100%;z-index:-1}body{background:#080507}
-#logo{background:url('https://xiexe.github.io/WoWLoginScreens/assets/img/ui/logos/Vanilla.png') no-repeat top!important;background-size:contain!important}
-#queue,#disconnectBox,#connectingBox{position:absolute;inset:0;z-index:3}
-#queue,#disconnectBox,#connectingBox{display:none}
-#loginBox{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;flex-direction:column}
-#loginBox .queueText{margin:8px}
-#loginBox .button{margin-top:14px}
-#loginBox .UIBox,#loginBox .UIBoxBackground{display:none}
-#loginBox input{background:#15191a;border:3px ridge #827867;border-radius:5px;color:#eee;font-size:18px;padding:5px 10px;width:220px;text-align:center}
-#loginBox input::placeholder{color:#a8a8a8}
-#queueTextContainer,#dcTextContainer{width:650px}
-#logo{pointer-events:none}
-#parody{position:fixed;right:12px;bottom:43px;color:#d4bb7c;font:11px Arial;text-shadow:0 1px 3px black;z-index:4}
-#copyrightText{font-size:13px}
-@media(max-width:700px){#queue,#disconnectBox,#connectingBox{transform:scale(.62);transform-origin:center}#loginBox{transform:scale(.85)}#logo{transform:scale(.4);transform-origin:top left;left:10px;top:10px}#copyrightText{font-size:9px}}
-</style></head><body>
-<div class="noSelect">
-<div class="xPacButton" id="logo" aria-label="World of Warcraft Vanilla"></div>
-<div id="loginBox"><p class="queueText" style="font-size:16px;letter-spacing:5px">FOREVER</p><p class="queueText">Account Name</p><input aria-label="Account name" placeholder="Account Name" autocomplete="off"><p class="queueText">Account Password</p><input aria-label="Demo password" type="password" placeholder="Password" autocomplete="off"><button class="button" id="loginButton">Log In</button></div>
-<div class="centered" id="connectingBox"><div class="UIBox" style="width:450px;height:100px"></div><div class="UIBoxBackground" style="width:500px;height:150px"></div><div id="queueTextContainer"><p class="queueText" id="connectingText">Authenticating...</p></div></div>
-<div class="centered" id="queue"><div class="UIBox" style="width:450px;height:100px"></div><div class="UIBoxBackground" style="width:500px;height:150px"></div><div id="queueTextContainer"><p class="queueText">Login Servers are Full</p><p class="queueText" id="queuePosition">Position in Queue: 23482</p><p class="queueText" id="queueTime">Estimated time: 2 min</p></div><button class="button" id="realmListButton">Cancel</button></div>
-<div class="centered" id="disconnectBox"><div class="UIBox" style="width:550px;height:100px"></div><div class="UIBoxBackground" style="width:600px;height:150px"></div><div id="dcTextContainer"><p class="queueText">You have been disconnected from the server.</p><p class="queueText">(WOW51900319)</p></div><button class="button" id="disconButton">Okay</button></div>
-<div class="fullWidth"><p id="copyrightText">WoW Forever fan-made parody · Based on Xiexe's WoWLoginScreens</p></div><p id="buildVersion">Version 1.12.1 (5875) (Release)</p><p id="buildDate">Vanilla</p>
-<div id="parody">Simulation only — credentials are not transmitted or stored</div>
-<div class="fullScreen" style="position:fixed;inset:0;z-index:-1;pointer-events:none"><div class="centered"><video autoplay muted loop playsinline id="background" style="position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:-1"><source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.webm" type="video/webm"><source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.mp4" type="video/mp4"></video></div></div>
-</div>
-<script>
-let interval,timeout;const el=id=>document.getElementById(id);function display(which){['loginBox','connectingBox','queue','disconnectBox'].forEach(id=>el(id).style.display=id===which?'flex':'none')}
-function clear(){clearInterval(interval);clearTimeout(timeout)}function reset(){clear();document.querySelectorAll('#loginBox input').forEach(i=>i.value='');display('loginBox')}
-function login(){clear();display('connectingBox');el('connectingText').textContent='Authenticating...';timeout=setTimeout(()=>{el('connectingText').textContent='Connecting...';timeout=setTimeout(startQueue,1100)},1000)}
-function startQueue(){display('queue');const start=Date.now(),duration=120000;function update(){const remaining=Math.max(0,duration-(Date.now()-start)),fraction=remaining/duration;el('queuePosition').textContent='Position in Queue: '+Math.ceil(23482*fraction);el('queueTime').textContent='Estimated time: '+(remaining>60000?'2 min':remaining>0?'1 min':'0 min');if(!remaining){clearInterval(interval);display('connectingBox');el('connectingText').textContent='Entering World...';timeout=setTimeout(()=>display('disconnectBox'),1900)}}update();interval=setInterval(update,250)}
-el('loginButton').onclick=login;el('realmListButton').onclick=reset;el('disconButton').onclick=reset;document.querySelectorAll('#loginBox input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')login()}));display('loginBox');
-</script></body></html>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=utf-8 />
+        <title>WoW Forever — Login Queue Simulator</title>
+        <link rel="stylesheet" href="https://xiexe.github.io/WoWLoginScreens/assets/css/styles.css">
+        
+    <style>
+#logo{background:url('https://xiexe.github.io/WoWLoginScreens/assets/img/ui/logos/Vanilla.png') no-repeat top!important}
+#background{object-fit:cover;width:100vw;height:100vh}
+#foreverLogin{position:fixed;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px}
+#foreverLogin label{font-family:FRIZQT,Georgia;color:#ffc700;text-shadow:0 1px 3px #000;font-size:18px}
+#foreverLogin input{width:210px;background:#202528;color:white;border:3px ridge #887a64;border-radius:4px;padding:5px;font-size:16px}
+#foreverLogin button{margin-top:5px}
+#foreverTag{position:absolute;top:140px;left:125px;color:#e9c77e;text-shadow:1px 2px 4px black;letter-spacing:4px;font:bold 18px Georgia;z-index:3}
+#simulationNotice{position:fixed;right:8px;bottom:42px;color:#dbcfae;font:11px Arial;z-index:4}
+</style></head>
+    <body onload="initForever();">
+        <div class="noSelect">
+
+            <!-- LOGO -->
+            <button class="xPacButton" id="logo" ></button>
+            
+            <div id="foreverTag">FOREVER</div><div id="foreverLogin"><label>Account Name</label><input autocomplete="off" placeholder="Account Name"><label>Account Password</label><input type="password" autocomplete="off" placeholder="Password"><button class="button" id="foreverLoginButton" onclick="startForever();">Log In</button></div><div id="simulationNotice">Parody simulation — no account details are sent or stored</div>
+<!--QUIT BUTTON AND OPTIONS BUTTON-->
+            <div id="quitButtonContainer" class="foreground">
+                <button id="optButton" class="button" onclick="showSettings();" > Options </button>
+                <button id="quitButton" class="button" onclick="resetForever();" > Quit </button>
+            </div>
+            
+            <!--OPTIONS PANEL-->
+            <div class="centered" id="options" style="display: none;">
+                <div class="UIBox" style="width: 450px; height: 15px;"></div>
+                <div class="UIBoxBackground" style="width: 500px; height: 75px;"></div>
+
+                <div class="slidecontainer">
+                    <p class="text" style="position: fixed; margin-top: 0%;">Sound</p>
+                    <input type="range" min="1" max="100" value="50" class="slider" id="volumeSlider" oninput="adjustVolume();">
+                </div>
+            </div>
+
+            <!--QUEUE BOX-->
+            <div class="centered" id="queue">
+                <div class="UIBox" style="width: 450px; height: 100px;"></div>
+                <div class="UIBoxBackground" style="width: 500px; height: 150px;"></div>
+                
+                <div id="queueTextContainer">
+                    <p class="queueText">Login Servers are Full</p>
+                    <p class="queueText" id="queuePosition">Position in Queue: 0000</p>
+                    <p class="queueText" id="queueTime">Estimated time: 999 min</p>
+                </div>
+                
+                <button class="button" id="realmListButton" onclick="resetForever();"> Cancel </button>
+            </div>
+
+            <!--DISCONNECT MESSAGE-->
+            <div class="centered" id="disconnectBox" style="display: none;">
+                <div class="UIBox" style="width: 550px; height: 100px;"></div>
+                <div class="UIBoxBackground" style="width: 600px; height: 150px;"></div>
+                
+                <div id="dcTextContainer">
+                    <p class="queueText">You have been disconnected from the server.</p>
+                    <p class="queueText">(WOW51900319)</p>
+                </div>
+                
+                <button class="button" id="disconButton" onclick="resetForever();"> Okay </button>
+            </div>
+
+            <!--COPYRIGHT TEXT-->
+            <div class="fullWidth">
+                <p id="copyrightText">Unofficial WoW Forever fan parody · Visual assets credited to Xiexe</p>
+            </div>
+
+            <!--BUILD VER-->
+            <p id="buildVersion">Version 1.12.1 (5875) (Release)</p>
+
+            <!--BUILD DATE-->
+            <p id="buildDate">WoW Forever</p>
+
+            <!-- BACKGROUND -->
+            <div class="fullScreen">
+                <div class="centered">
+                    <video autoplay muted="true" loop id="background">
+                        <source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.webm" type="video/webm">
+                        <source src="https://xiexe.github.io/WoWLoginScreens/assets/img/bg/Vanilla.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+        </div>
+    <script>var expansion = 0;
+
+var expansionMap = [
+    'Vanilla',
+    'BurningCrusade',
+    'WrathOfTheLichKing',
+    'Cataclysm',
+    'MistsOfPandaria',
+    'WarlordsOfDraenor',
+    'Legion',
+    'BattleForAzeroth',
+    'Shadowlands',
+]
+
+var audioPath = 'https://xiexe.github.io/WoWLoginScreens/assets/audio';
+var videoPath = 'https://xiexe.github.io/WoWLoginScreens/assets/img/bg';
+var logoPath = 'https://xiexe.github.io/WoWLoginScreens/assets/img/ui/logos';
+
+var verMap = [
+    'Version 1.12.1 (5875) (Release)',
+    'Version 2.4.3 (8606) (Release)',
+    'Version 3.3.5 (12340) (Release)',
+    'Version 4.3.4 (15595) (Release x86)',
+    'Version 5.4.8 (18414) (Release x86)',
+    'Version 6.2.0 (20173) (Release x64)',
+    'Version 7.3.5 (26365) (Release x64)',
+    'Version 8.3.7 (35662) (Release x64)',
+    'Version 9.0.1 (35944) (Release x64)'
+];
+
+var dateMap = [
+    'Sept 19 2006',
+    'Jul 10 2008',
+    'Jun 24 2010',
+    'Feb 9 2011',
+    'Jun 13 2014',
+    'Jun 20 2015',
+    'Apr 3 2018',
+    'Aug 24 2020',
+    'Oct 13 2020'
+];
+
+var buttonColorMap = [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+];
+
+var copyMap = [
+    2006,
+    2008,
+    2010,
+    2011,
+    2014,
+    2015,
+    2018,
+    2020,
+    2020
+];
+
+var cursor;
+var audio = new Audio();
+var buttonAudio = new Audio();
+var audioInitialPlayback = false;
+var queuePos = null;
+var disconnected = false;
+
+function init()
+{
+    switchExpansion();
+    window.addEventListener('click', waitForInteractionToPlayAudio);
+
+    getPositionInQueue();
+    setInterval(determineIfDisconnect, 8000);
+}
+
+function waitForInteractionToPlayAudio()
+{
+    if(!audioInitialPlayback)
+    {
+        buttonAudio.volume = 0.5;
+        audio.volume = 0.5;
+        audio.loop = true;
+        audio.play();
+        audioInitialPlayback = true;
+    }
+}
+
+function determineIfDisconnect()
+{
+    if(!disconnected)
+    {
+        var rand = Math.random();
+        if(rand < 0.75)
+            getPositionInQueue();
+    }
+}
+
+function getPositionInQueue()
+{
+    var number;
+    if(queuePos === null)
+    {    
+        number = Math.floor(Math.random() * Math.floor(10000));
+        queuePos = number;
+    }
+    else
+    {
+        number = Math.floor(queuePos - (Math.random() * Math.floor(15)));
+        queuePos = number;
+
+        if(queuePos < 3)
+        {
+            number = 0;
+            queuePos = 0;
+            doDisconnect();
+        }
+    }
+
+    document.getElementById('queuePosition').innerHTML = 'Position in Queue: ' + number;
+    getEstimatedTime(number)
+}
+
+function getEstimatedTime(qPos)
+{
+    var time = Math.floor(Math.floor(qPos*2*3*2 + ((qPos*2*3*3) - (qPos*2*3*2)) * Math.random()) * 0.01);
+    document.getElementById('queueTime').innerHTML = 'Estimated time: ' + time + ' min';
+}
+
+function doDisconnect()
+{
+    hideQueue();
+    showDisconnect();
+    playButtonAudio(1);
+    disconnected = true;
+    console.log("DC'd")
+}
+
+function manualChangeExpac()
+{
+    console.log("Changing xpac to: ");
+    expansion += 1;
+    if(expansion > 8)
+        expansion = 0;
+    
+    var bg = document.getElementById('background');
+    bg.muted = false;
+    switchExpansion();
+}
+
+function switchExpansion()
+{
+    if(disconnected)
+    {
+        disconnected = false;
+        hideQueue();
+        showDisconnect();
+    }
+    queuePos = null;
+    getPositionInQueue();
+    var bg = document.getElementById('background');
+    var bgWebM = bg.querySelector('source:nth-child(1)');
+    var bgMp4 = bg.querySelector('source:nth-child(2)');
+    var logo = document.getElementById('logo');
+    var version = document.getElementById('buildVersion');
+    var date = document.getElementById('buildDate');
+    var copyright = document.getElementById('copyrightText');
+    
+    bg.pause();
+    audio.pause();
+    var expName = expansionMap[expansion];
+    console.log(expName);
+    audio.src = `${audioPath}/${expName}.ogg`;
+    bgWebM.setAttribute('src', `${videoPath}/${expName}.webm`);
+    bgMp4.setAttribute('src', `${videoPath}/${expName}.mp4`)
+    logo.style.background = `url(${logoPath}/${expName}.png)`;
+    version.textContent = verMap[expansion];
+    date.textContent = dateMap[expansion];
+    copyright.textContent = `Copyright 2004-${copyMap[expansion]} Blizzard Entertainment. All Right Reserved.`;
+    setButtonColors(buttonColorMap[expansion]);
+    
+    bg.load();
+    bg.play();
+    audio.play();
+    
+}
+
+function playButtonAudio(index)
+{
+    buttonAudio.pause();
+    buttonAudio.time = 0;
+
+    if(index === 0)
+        buttonAudio.src = 'https://xiexe.github.io/WoWLoginScreens/assets/audio/ui/button_click.ogg';
+    else
+        buttonAudio.src = 'https://xiexe.github.io/WoWLoginScreens/assets/audio/ui/button_click_big.ogg';
+    
+    buttonAudio.play();
+}
+
+function hideQueue()
+{
+    var x = document.getElementById("queue");
+    if(x.style.display === "none")
+        x.style.display = "flex";
+    else
+        x.style.display = "none";
+}
+
+function showDisconnect()
+{
+    var x = document.getElementById("disconnectBox");
+    if(x.style.display === "none")
+        x.style.display = "flex";
+    else
+        x.style.display = "none";
+}
+
+function resetQueue()
+{
+    disconnected = false;
+    showDisconnect();
+    hideQueue();
+}
+
+function showSettings()
+{
+    var opt = document.getElementById("options");
+    if(opt.style.display == "none")
+    {
+        opt.style.display = "flex";
+    }
+    else
+    {
+        opt.style.display = "none";
+    }
+}
+
+function adjustVolume()
+{
+    var slider = document.getElementById("volumeSlider");
+    var val = slider.value * 0.01;
+    audio.volume = val;
+    buttonAudio.volume = val;
+    document.getElementById('background').volume = val;
+}
+
+function setButtonColors(index)
+{
+    var quitButton = document.getElementById("quitButton");
+    var optButton = document.getElementById("optButton");
+    var realmListButton = document.getElementById("realmListButton");
+    var disconButton = document.getElementById("disconButton");
+    switch(index)
+    {
+        case 0:
+            quitButton.className = "button";
+            optButton.className = "button";
+            realmListButton.className = "button";
+            disconButton.className = "button";
+        break;
+
+        case 1:
+            quitButton.className = "button_b";
+            optButton.className = "button_b";
+            realmListButton.className = "button_b";
+            disconButton.className = "button_b";
+        break;
+    }
+}</script><script>
+let foreverTimer,foreverTimeout;
+function initForever(){switchExpansion();document.getElementById('queue').style.display='none';document.getElementById('disconnectBox').style.display='none';document.getElementById('foreverLogin').style.display='flex';document.getElementById('logo').style.background="url('https://xiexe.github.io/WoWLoginScreens/assets/img/ui/logos/Vanilla.png') no-repeat top";document.querySelectorAll('#foreverLogin input').forEach(e=>e.addEventListener('keydown',event=>{if(event.key==='Enter')startForever()}))}
+function resetForever(){clearInterval(foreverTimer);clearTimeout(foreverTimeout);document.getElementById('queue').style.display='none';document.getElementById('disconnectBox').style.display='none';document.getElementById('foreverLogin').style.display='flex';document.querySelector('#foreverLogin input[type=password]').value=''}
+function startForever(){resetForever();document.getElementById('foreverLogin').style.display='none';document.getElementById('queue').style.display='flex';const start=Date.now();function tick(){const remain=Math.max(0,120000-(Date.now()-start));document.getElementById('queuePosition').textContent='Position in Queue: '+Math.ceil(23482*remain/120000);document.getElementById('queueTime').textContent='Estimated time: '+(remain>60000?'2 min':remain>0?'1 min':'0 min');if(remain===0){clearInterval(foreverTimer);document.getElementById('queue').style.display='none';foreverTimeout=setTimeout(()=>{document.getElementById('disconnectBox').style.display='flex'},1800)}}tick();foreverTimer=setInterval(tick,250)}
+</script></body>
+</html>
