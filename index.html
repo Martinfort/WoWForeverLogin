@@ -388,7 +388,41 @@ function setButtonColors(index)
 let foreverTimer,foreverTimeout;
 function initForever(){switchExpansion();audio.src='https://xiexe.github.io/WoWLoginScreens/assets/audio/Vanilla.ogg';audio.loop=true;audio.volume=.45;window.addEventListener('pointerdown',()=>{audio.play().catch(()=>{})},{once:true});document.getElementById('queue').style.display='none';document.getElementById('disconnectBox').style.display='none';document.getElementById('rulesetScreen').style.display='none';document.getElementById('foreverLogin').style.display='flex';document.getElementById('logo').style.background="url('https://bnetcmsus-a.akamaihd.net/cms/gallery/j3/J3RLTCKOODJ51789169243964.png') center / contain no-repeat";document.querySelectorAll('#foreverLogin input').forEach(e=>e.addEventListener('keydown',event=>{if(event.key==='Enter')startForever()}))}
 function resetForever(){clearInterval(foreverTimer);clearTimeout(foreverTimeout);document.getElementById('queue').style.display='none';document.getElementById('disconnectBox').style.display='none';document.getElementById('rulesetScreen').style.display='none';document.getElementById('foreverLogin').style.display='flex';document.querySelector('#foreverLogin input[type=password]').value=''}
-function startForever(){audio.play().catch(()=>{});resetForever();document.getElementById('foreverLogin').style.display='none';document.getElementById('queue').style.display='flex';const start=Date.now();function tick(){const remain=Math.max(0,60000-(Date.now()-start));document.getElementById('queuePosition').textContent='Position in Queue: '+Math.ceil(23482*remain/60000);document.getElementById('queueTime').textContent='Estimated time: '+(remain>0?(Math.max(1,Math.ceil(300*remain/60000)))+' min':'0 min');if(remain===0){clearInterval(foreverTimer);document.getElementById('queue').style.display='none';foreverTimeout=setTimeout(()=>{if(Math.random()<0.35){document.getElementById('rulesetScreen').style.display='flex'}else{document.getElementById('disconnectBox').style.display='flex'}},1800)}}tick();foreverTimer=setInterval(tick,250)}
+function startForever(){
+ audio.play().catch(()=>{});
+ resetForever();
+ document.getElementById('foreverLogin').style.display='none';
+ document.getElementById('queue').style.display='flex';
+ const longQueue=Math.random()<0.5;
+ const started=Date.now();
+ const initialPosition=longQueue?23482:Math.floor(450+Math.random()*1500);
+ function tick(){
+  const elapsed=Math.max(0,Date.now()-started);
+  const remaining=Math.max(0,60000-elapsed);
+  if(longQueue){
+   // Displayed wait behaves like a genuine ~5-hour queue, never rapidly catches up.
+   const minutesPassed=Math.floor(elapsed/60000);
+   document.getElementById('queueTime').textContent='Estimated time: '+Math.max(1,300-minutesPassed)+' min';
+   document.getElementById('queuePosition').textContent='Position in Queue: '+Math.max(1,initialPosition-Math.floor(elapsed/60000)*Math.ceil(initialPosition/300));
+  }else{
+   document.getElementById('queueTime').textContent='Estimated time: '+(remaining>0?'1 min':'0 min');
+   document.getElementById('queuePosition').textContent='Position in Queue: '+Math.ceil(initialPosition*remaining/60000);
+  }
+  if(remaining===0){
+   clearInterval(foreverTimer);
+   document.getElementById('queue').style.display='none';
+   foreverTimeout=setTimeout(()=>{
+    if(Math.random()<0.35){
+     document.getElementById('rulesetScreen').style.display='flex';
+    }else{
+     document.getElementById('disconnectBox').style.display='flex';
+    }
+   },1800);
+  }
+ }
+ tick();
+ foreverTimer=setInterval(tick,250);
+}
 function chooseRuleset(name){document.getElementById('rulesetScreen').style.display='none';document.getElementById('disconnectBox').style.display='flex';}
 </script></body>
 </html>
